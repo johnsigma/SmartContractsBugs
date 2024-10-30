@@ -50,10 +50,8 @@ contract TokenAuction {
             "You must own the token to create one auction!"
         );
 
-        OneAuction storage l_aux = myAuctions[name];
-
         require(
-            l_aux.blocklimit == 0,
+            myAuctions[name].blocklimit == 0,
             "An auction with this name has already started"
         );
 
@@ -97,12 +95,10 @@ contract TokenAuction {
             "The auction should be in Bid state!"
         );
         require(
-            msg.value == collateralValue + contractFee,
-            "You should send the corretc value! Collateral + Fee"
+            msg.value == collateralValue,
+            "You should send the corretc value!"
         );
         a.collateral[msg.sender] = true;
-
-        contractFeeBalance += contractFee;
     }
 
     function bid(string memory name, uint v) public {
@@ -161,6 +157,7 @@ contract TokenAuction {
         require(a.payment == false, "I will not pay twice!");
         require(a.collateral[a.winner] == false, "Wait for payment");
         a.tokenOwner.transfer(a.winnerBid - contractFee);
+        contractFeeBalance += contractFee;
         a.payment = true;
     }
 
